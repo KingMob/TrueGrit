@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>net.modulolotus</groupId>
+  <artifactId>TrueGrit</artifactId>
+  <version>0.1.0-SNAPSHOT</version>
+  <name>TrueGrit</name>
+  <description>A data-driven, functionally-oriented, idiomatic wrapper library for
+    using Resilience4j.</description>
+  <url>https://github.com/KingMob/TrueGrit</url>
+  <licenses>
+    <license>
+      <name>Eclipse Public License 2.0</name>
+      <url>https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <developers>
+    <developer>
+      <id>KingMob</id>
+      <name>Matthew Davidson</name>
+      <email>matthew@modulolotus.net</email>
+      <url>https://modulolotus.net</url>
+    </developer>
+  </developers>
+  <scm>
+    <url>https://github.com/KingMob/TrueGrit</url>
+    <connection>scm:git:git://github.com/KingMob/TrueGrit.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/KingMob/TrueGrit.git</developerConnection>
+    <tag>v0.1.0-SNAPSHOT</tag>
+  </scm>
+  <dependencies>
+    <dependency>
+      <groupId>org.clojure</groupId>
+      <artifactId>clojure</artifactId>
+      <version>1.10.3</version>
+    </dependency>
+  </dependencies>
+  <build>
+    <sourceDirectory>src</sourceDirectory>
+  </build>
+  <repositories>
+    <repository>
+      <id>clojars</id>
+      <url>https://repo.clojars.org/</url>
+    </repository>
+    <repository>
+      <id>sonatype</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+    </repository>
+  </repositories>
+  <distributionManagement>
+    <repository>
+      <id>clojars</id>
+      <name>Clojars repository</name>
+      <url>https://clojars.org/repo</url>
+    </repository>
+  </distributionManagement>
+</project>

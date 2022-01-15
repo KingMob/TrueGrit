@@ -1,0 +1,20 @@
+{:paths ["src" "resources"]
+ :deps  {org.clojure/clojure                     {:mvn/version "1.10.3"}
+         io.github.resilience4j/resilience4j-all {:mvn/version "1.7.1"}
+         org.clojure/tools.logging               {:mvn/version "1.2.4"}
+         org.slf4j/slf4j-api                     {:mvn/version "1.7.35"}}
+ :aliases
+        {:build {:paths ["build"]
+                 :deps       {io.github.seancorfield/build-clj
+                              {:git/tag "v0.6.7" :git/sha "22c2d09"}}
+                 :ns-default build}
+         :env/dev
+                {:extra-paths ["dev"]
+                 :extra-deps {org.slf4j/slf4j-simple {:mvn/version "1.7.35"}}
+                 :jvm-opts ["-Dorg.slf4j.simpleLogger.defaultLogLevel=trace" "-Dorg.slf4j.simpleLogger.logFile=System.out"]}
+         :test  {:extra-paths ["test"]
+                 :extra-deps  {#_#_org.clojure/test.check {:mvn/version "1.1.1"}
+                               lambdaisland/kaocha {:mvn/version "1.60.977"}
+                               #_#_io.github.cognitect-labs/test-runner
+                                   {:git/tag "v0.5.0" :git/sha "48c3c67"}}
+                 :main-opts   ["-m" "kaocha.runner"]}}}

@@ -1,0 +1,154 @@
+= README
+
+image::https://cljdoc.org/badge/net.modulolotus/TrueGrit[cljdoc badge, link=https://cljdoc.org/d/net.modulolotus/TrueGrit]
+
+== True Grit
+
+For when you need a function that won't give up at the first sign of failure.
+
+image:./true-grit-bridges.jpg[True Grit,float="right"]
+
+=== About
+
+A data-driven, functionally-oriented, idiomatic wrapper library for
+using Resilience4j. Start in the `net.modulolotus.truegrit` namespace,
+and see the individual policy namespaces if you have more advanced needs.
+It contains all-in-one functions that take a fn and a config map, and
+return a wrapped fn with the resilience policy attached. All fns return
+the same results, except for thread-pool-based bulkheads which make fns
+that return Futures.
+
+=== Background
+
+Before using, be sure to understand how Resilience4j works, and in
+particular, the way circuit breakers operate.
+
+See:
+
+* Resilience4j docs - https://resilience4j.readme.io/
+* Circuit breaker pattern - https://www.martinfowler.com/bliki/CircuitBreaker.html
+* Release It! - https://pragprog.com/titles/mnee2/release-it-second-edition/
+* Hystrix wiki - https://github.com/Netflix/Hystrix/wiki
+
+=== Usage
+
+_Be mindful of interactions at different levels of the system._ E.g.,
+wrapping a high-level fn with a retry policy of 3 attempts that calls an
+AWS client lower down that also has its own retry policy of 3 attempts
+can result in up to 3x3=9 calls under failure modes, exacerbating
+things.
+
+Order of wrapping matters. E.g.:
+
+[source,clojure]
+----
+(-> my-fn
+    (with-retry some-retry-config)
+    (with-time-limiter some-timeout-config)
+----
+
+will retry several times, but if the time limit is up before the tries
+succeed, it will return failure. This is probably not what you want. On
+the other hand:
+
+[source,clojure]
+----
+(-> my-fn
+    (with-time-limiter some-timeout-config)
+    (with-retry some-retry-config)
+----
+
+
+will make calls with a certain time limit, and only if they return
+failure or exceed their time limit, will it attempt a retry. If you want
+a canonical "good" ordering, see the `robustify` example fn in the source.
+
+=== Architecture
+
+==== Design goals and constraints
+
+Each resilience policy is implemented as a light-weight functional
+facade across dozens of underlying r4j Java objects. It tries to ease the
+pain of directly working with the r4j classes while still offering the
+same level of functionality. The only exposed r4j classes are the main
+policies. Where possible, r4j classes that mostly exist to hold properties
+are replaced with maps for Clojure usage.
+
+===== No registries
+
+Registries are r4j collections of the same policy. (Time-limiters do not
+offer registries, but the rest do.) A previous version of this library
+used registries, but I removed them. They offer too little over existing
+Clojure data containers to be worth the overhead. You are better off using
+standard fns to store them in a map in an atom.
+
+If you end up using them, there are some quirks to how they work that you
+should be aware of. The registries combine retrieval and creation under
+the hood. The first time you request an object with a certain name and
+config, it will create a new one. The second time you request it with
+the same name, it will return the existing one. This means you can
+efficiently use r4j on the fly without creating a lot of extra objects,
+but it also means that a) if you make a typo in the policy name when creating/retrieving, you will get a _new_ object, and b) you cannot
+update a config to an existing policy in a registry. (R4j policy objects
+are immutable, but the r4j registry interface doesn’t make it clear that
+a new config will be effectively ignored.)
+
+===== No protocols
+
+I chose not to use protocols here. At first glance, this seems like an odd
+decision: each ns has many similarly-named fns, in some cases with similar
+bodies; it seems natural to use protocols.
+
+However, the benefit of protocols is in dealing with abstractions and
+using polymorphism. With protocols, we can ignore irrelevant underlying
+details and swap concrete implementations without changing calling code.
+E.g., if I were coding to a collection abstraction, I could add/remove
+items without knowing the specific data structure used. Unfortunately,
+r4j does not have these properties. (Not even the two bulkhead
+implementations are swappable, since one is async.)
+
+At a superficial level, the r4j resilience strategies do have common
+behaviors, such as wrapping a fn and adding event listeners. However,
+they are _completely_ non-interchangeable in behavior and usage (e.g.,
+you can’t meaningfully swap a time-limiter for a circuit breaker).
+There’s no useful shared abstraction to code to.
+
+On top of that, the polymorphism is limited by functions that have the
+same name, but very different sets of options. Enough differences in
+params exist between similar structures (e.g., configurations,
+event handlers) that the params are not swappable, even if
+the fn name is identical. Many functions can’t safely be polymorphically
+called; you’d have to know the underlying type to supply the correct
+options, and then you don’t have polymorphism. Even in a case where
+meaningful-but-limited polymorphism could be obtained, they’re still
+hampered by the non-substitutability of the underlying strategies they
+use. This is all reflected in the interfaces/classes of Resilience4j
+itself, which has the exact same issue; there’s fewer common interfaces/superclasses than you’d expect.
+
+_But surely protocols wouldn’t hurt, right?_ Well, they would suggest
+misleading polymorphism. They would add a bit of extra clutter to the
+namespaces. But mostly, there’s almost no advantage to using them here,
+so I didn’t.
+
+_But what about all the almost-duplicate fn bodies?_ Regrettable, but
+better than the alternatives. If they were *exact* duplicates, I could
+rely on automatic reflection, but sadly, r4j like to name fns like
+`getAllRetries` instead of a more generic `getAll`. I could use some
+funky reflection or macros to DRY it up, but it would be more complex
+and error-prone than a bit of copying.
+
+==== Non-goals
+
+The cache module is currently unsupported, since several Clojure caching
+libraries exist. However, it could be included, if people are interested.
+
+Supporting all the Java frameworks that r4j interoperates with is also a
+non-goal for now.
+
+==== Future directions
+
+The r4j registries add virtually nothing over standard Clojure mutable
+containers, but the code I wrote for them still exists, so I could add
+them back if people really need them.
+
+Metric module support may be added, if anyone expresses a need for it.
