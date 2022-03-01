@@ -6,7 +6,7 @@
             [org.corfield.build :as bb])
   (:import (java.io File)))
 
-(def lib 'net.modulolotus/TrueGrit)
+(def lib 'net.modulolotus/truegrit)
 #_(def version "0.1.0-SNAPSHOT")
 ;; alternatively, use MAJOR.MINOR.COMMITS:
 (def version (format "1.0.%s" (b/git-count-revs nil)))

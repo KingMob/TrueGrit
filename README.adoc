@@ -1,6 +1,8 @@
 = README
 
-image::https://cljdoc.org/badge/net.modulolotus/TrueGrit[cljdoc badge, link=https://cljdoc.org/d/net.modulolotus/TrueGrit]
+image::https://clojars.org/net.modulolotus/truegrit/latest-version.svg[clojars badge, link=https://clojars.org/net.modulolotus/truegrit]
+
+image::https://cljdoc.org/badge/net.modulolotus/truegrit[cljdoc badge, link=https://cljdoc.org/d/net.modulolotus/truegrit]
 
 == True Grit
 
