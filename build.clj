@@ -10,6 +10,10 @@
 #_(def version "0.1.0-SNAPSHOT")
 ;; alternatively, use MAJOR.MINOR.COMMITS:
 (def version (format "1.0.%s" (b/git-count-revs nil)))
+(def extra-build-opts {:lib     lib
+                       :version version
+                       :tag     version
+                       :src-pom "template/pom.xml"})
 
 (def cljdoc-port 8000)
 
@@ -23,24 +27,24 @@
 
 (defn jar "Make a jar file" [opts]
   (-> opts
-      (assoc :lib lib :version version :src-pom "template/pom.xml")
+      (merge extra-build-opts)
       (bb/jar)))
 
 (defn ci "Run the CI pipeline of tests (and build the JAR)." [opts]
   (-> opts
-      (assoc :lib lib :version version :src-pom "template/pom.xml")
+      (merge extra-build-opts)
       (bb/run-tests)
       (bb/clean)
       (jar)))
 
 (defn install "Install the JAR locally." [opts]
   (-> opts
-      (assoc :lib lib :version version)
+      (merge extra-build-opts)
       (bb/install)))
 
 (defn deploy "Deploy the JAR to Clojars." [opts]
   (-> opts
-      (assoc :lib lib :version version)
+      (merge extra-build-opts)
       (bb/deploy)))
 
 
@@ -59,7 +63,7 @@
 
 (defn- cljdoc-docker [opts]
   (-> opts
-      (assoc :lib lib :version version :src-pom "template/pom.xml")
+      (merge extra-build-opts)
       (bb/jar)
       (bb/install))
   (let [git-rev (b/git-process {:git-args "rev-parse HEAD"})
