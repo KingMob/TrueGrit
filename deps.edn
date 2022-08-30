@@ -6,8 +6,8 @@
          io.github.resilience4j/resilience4j-timelimiter    {:mvn/version "1.7.1"}
          org.clojure/tools.logging                          {:mvn/version "1.2.4"}}
  :aliases
- {:build {:deps       {io.github.seancorfield/build-clj
-                       {:git/tag "v0.8.0" :git/sha "9bd8b8a"}}
+ {:build {:deps       {io.github.seancorfield/build-clj {:git/tag "v0.8.3" :git/sha "7ac1f8d"}
+                       cljdoc/cljdoc {:mvn/version "0.0.1315-c9e9a7e"}}
           :ns-default build}
   :env/dev
   {:extra-paths ["dev"]
