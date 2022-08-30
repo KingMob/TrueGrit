@@ -51,6 +51,7 @@
 (defn- home-dir []
   (System/getProperty "user.home"))
 
+;; 1. Run this, then leave open
 (defn start-cljdoc-docker [opts]
   (let [docker-command-args ["docker" "run" "--rm"
                              "--publish" (str cljdoc-port ":" cljdoc-port)
@@ -74,7 +75,7 @@
                              "--volume" (str (home-dir) "/.m2:/root/.m2")
                              "--volume" "/tmp/cljdoc:/app/data"
                              "--entrypoint" "clojure"
-                             "cljdoc/cljdoc" "-M:cli" "ingest"
+                             "cljdoc/cljdoc" "-A:cli" "ingest"
                              "--project" (str lib)
                              "--version" (str version)
                              "--git" (:git opts "/repo-to-import")
@@ -84,11 +85,13 @@
       (browse/browse-url (str "http://localhost:" cljdoc-port "/d/" (str lib) "/" (str version) "/"))
       (println "ERROR: Could not run Docker with command:\n" (str/join " " docker-command-args)))))
 
+;; 2a. Run this to see GH assets
 (defn cljdoc-docker-github
   "Push to GH, then build cljdoc"
   [opts]
   (b/git-process {:git-args ["push" "origin" "main"]})
   (cljdoc-docker (merge {:git "https://github.com/KingMob/TrueGrit"} opts)))
 
+;; 2b. ..or run this
 (defn cljdoc-docker-local [opts]
   (cljdoc-docker (merge {:git "/repo-to-import"} opts)))
