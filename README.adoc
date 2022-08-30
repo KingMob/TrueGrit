@@ -1,14 +1,12 @@
 = README
 
-image::https://clojars.org/net.modulolotus/truegrit/latest-version.svg[clojars badge, link=https://clojars.org/net.modulolotus/truegrit]
-
-image::https://cljdoc.org/badge/net.modulolotus/truegrit[cljdoc badge, link=https://cljdoc.org/d/net.modulolotus/truegrit]
+image:https://img.shields.io/clojars/v/net.modulolotus/truegrit.svg[clojars badge, link=https://clojars.org/net.modulolotus/truegrit] image:https://cljdoc.org/badge/net.modulolotus/truegrit[cljdoc badge, link=https://cljdoc.org/d/net.modulolotus/truegrit]
 
 == True Grit
 
 For when you need a function that won't give up at the first sign of failure.
 
-image:./true-grit-bridges.jpg[True Grit,float="right"]
+image::./true-grit-bridges.jpg[True Grit,float="right"]
 
 === About
 
