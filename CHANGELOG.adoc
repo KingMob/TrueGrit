@@ -3,8 +3,21 @@
 
 Versions are _MAJOR.MINOR.NUMBER-OF-COMMITS_.
 
-=== 1.0.X - 2022-01-26
+=== 1.0.12 - 2022-08-30
 
-==== Added
+* Updated docs, added examples
+* Fixed README badges
+* Updated build
 
-* Initial import
+=== 1.0.7 - 2022-04-23
+
+* Pare down unneeded dependencies
+* Update some dep versions
+
+=== 1.0.5 - 2022-03-01
+
+* Internal fix for bug in tagging
+
+=== 1.0.4 - 2022-03-01
+
+* First official release
