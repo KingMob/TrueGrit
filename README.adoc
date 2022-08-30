@@ -17,13 +17,14 @@ using Resilience4j. Start in the `net.modulolotus.truegrit` namespace,
 and see the individual policy namespaces if you have more advanced needs.
 It contains all-in-one functions that take a fn and a config map, and
 return a wrapped fn with the resilience policy attached. All fns return
-the same results, except for thread-pool-based bulkheads which make fns
-that return Futures.
+the same results (except for thread-pool-based bulkheads, which make fns
+that return Futures).
 
-=== Background
+Docs are available https://cljdoc.org/badge/net.modulolotus/truegrit[here].
 
-Before using, be sure to understand how Resilience4j works, and in
-particular, the way circuit breakers operate.
+=== Background reading
+
+Before using circuit breakers and bulkheads, be sure to understand how they operate. I highly recommend _Release It!_ to understand the ways distributed systems can fail and how to compensate for them.
 
 See:
 
@@ -32,15 +33,125 @@ See:
 * Release It! - https://pragprog.com/titles/mnee2/release-it-second-edition/
 * Hystrix wiki - https://github.com/Netflix/Hystrix/wiki
 
-=== Usage
+=== Examples
 
-_Be mindful of interactions at different levels of the system._ E.g.,
+===== Basic usage
+[source,clojure]
+----
+(require '[net.modulolotus.truegrit :as tg])
+
+(def resilient-fn
+  (-> flaky-fn
+      ;; Give each individual call up to 10s to complete
+      (tg/with-time-limiter {:timeout-duration 10000})
+
+      ;; Try up to 5 times, waiting 1s between failures
+      ;; Will retry if an exception is thrown by default, but will also retry if
+      ;; the return value is nil
+      (tg/with-retry {:name            "my-retry"
+                      :max-attempts    5
+                      :wait-duration   1000
+                      :retry-on-result nil?})
+
+      ;; If it still fails after 5 tries, record it as a failure in the CB
+      ;; CB will go into OPEN status if 20% of calls end up failures
+      ;; CB will wait for at least 40 calls before considering a change in status,
+      ;; giving it time to warm up.
+      ;; Ignores UserCanceledExceptions, since if the user hit "Cancel", it's not a
+      ;; problem in the underlying service
+      (tg/with-circuit-breaker {:name                    "my-circuit-breaker"
+                                :failure-rate-threshold  20
+                                :minimum-number-of-calls 40
+                                :ignore-exceptions       [UserCanceledException]})))
+----
+
+===== Use a shared circuit breaker to track an underlying service called by many fns
+[source,clojure]
+----
+(require '[net.modulolotus.truegrit.circuit-breaker :as cb])
+
+(def rest-service-cb (cb/circuit-breaker "shared-rest-service"
+                                         {:failure-rate-threshold 30
+                                          :minimum-number-of-calls 10}))
+
+(def resil-get (cb/wrap flaky-get rest-service-cb))
+(def resil-post (cb/wrap flaky-post rest-service-cb))
+(def resil-put (cb/wrap flaky-put rest-service-cb))
+(def resil-patch (cb/wrap flaky-patch rest-service-cb))
+(def resil-delete (cb/wrap flaky-delete rest-service-cb))
+----
+
+===== Check circuit breaker to choose an alternative method if status is OPEN
+[source,clojure]
+----
+(require '[net.modulolotus.truegrit.circuit-breaker :as cb])
+
+(if (-> resilient-fn
+        (cb/retrieve)           ; retrieve associated CircuitBreaker
+        (cb/call-allowed?))     ; is a call allowed right now?
+  (resilient-fn)                ; if so, make the call
+  (some-fallback-fn))           ; if not, we can't wait, try a fallback
+----
+
+
+===== Use semaphore-based bulkheads to limit database access, keep 20% capacity in reserve, and log reserved metrics
+[source,clojure]
+----
+(require '[net.modulolotus.truegrit.bulkhead :as bh])
+
+(defn database-query-fn
+  "Some database fn that we've determined can only handle 100 simultaneous queries"
+  [user]
+  ;; do some db stuff
+  )
+
+;; Make a default version that can use up to 80% of the database's capacity
+(def default-database-query (tg/with-bulkhead database-query-fn
+                                              {:name "default-db-bulkhead"
+                                               :max-concurrent-calls 80}))
+
+;; Make a version that reserves 20% for special needs
+(def reserved-database-query (tg/with-bulkhead database-query-fn
+                                               {:name "reserved-db-bulkhead"
+                                                :max-concurrent-calls 20}))
+
+;; Usage
+(defn some-handler-fn
+  [user]
+  (if (user-is-special-somehow user)   ; Is the user a VIP, sysadmin, etc?
+    (reserved-database-query user)     ; Make reserved call - the default bulkhead being full has no impact here
+    (default-database-query user)))    ; Make standard call, blocking if unavailable
+
+;; Log reserved bulkhead metrics every 10s
+(future
+  (loop []
+    (-> reserved-database-query
+        (bh/retrieve)
+        (bh/metrics)
+        (log/debug))
+    (Thread/sleep 10000)
+    (recur)))
+----
+
+=== Guidelines
+
+[horizontal]
+Circuit breaker status shorthand:: CLOSED is good, OPEN is bad. Think of electricity flowing.
+
+Make sure you've read up on bulkheads and circuit breakers before using them.:: Seriously.
+
+Retries only make sense if there's a reasonable expectation the fn will succeed within an acceptable time frame.:: They're better-suited for temporary glitches in the matrix, not a service being down all day. If the fn won't succeed in time, retries will make things _worse_, which is why pairing them with circuit breakers works well.
+
+Be mindful of interactions at different levels of the system.:: E.g.,
 wrapping a high-level fn with a retry policy of 3 attempts that calls an
-AWS client lower down that also has its own retry policy of 3 attempts
+AWS client lower down that _also_ has its own retry policy of 3 attempts
 can result in up to 3x3=9 calls under failure modes, exacerbating
-things.
+things. Another common example is having multiple timeouts; it's pointless,
+since the shortest timeout will trigger first.
 
-Order of wrapping matters. E.g.:
+You still need to handle errors.:: No amount of resilience policies can ensure a function will always succeed.
+
+_Order of wrapping matters._ E.g.:
 
 [source,clojure]
 ----
@@ -65,7 +176,7 @@ will make calls with a certain time limit, and only if they return
 failure or exceed their time limit, will it attempt a retry. If you want
 a canonical "good" ordering, see the `robustify` example fn in the source.
 
-=== Architecture
+=== TrueGrit architecture
 
 ==== Design goals and constraints
 
@@ -84,7 +195,7 @@ used registries, but I removed them. They offer too little over existing
 Clojure data containers to be worth the overhead. You are better off using
 standard fns to store them in a map in an atom.
 
-If you end up using them, there are some quirks to how they work that you
+If you choose to use them, there are some quirks to how they work that you
 should be aware of. The registries combine retrieval and creation under
 the hood. The first time you request an object with a certain name and
 config, it will create a new one. The second time you request it with
@@ -98,7 +209,7 @@ a new config will be effectively ignored.)
 ===== No protocols
 
 I chose not to use protocols here. At first glance, this seems like an odd
-decision: each ns has many similarly-named fns, in some cases with similar
+decision: each namespace has many similarly-named fns, in some cases with similar
 bodies; it seems natural to use protocols.
 
 However, the benefit of protocols is in dealing with abstractions and
@@ -141,8 +252,9 @@ and error-prone than a bit of copying.
 
 ==== Non-goals
 
-The cache module is currently unsupported, since several Clojure caching
-libraries exist. However, it could be included, if people are interested.
+The r4j cache module is currently unsupported, since many Clojure/Java
+caching libraries already exist. However, it could be included, if people
+are interested.
 
 Supporting all the Java frameworks that r4j interoperates with is also a
 non-goal for now.

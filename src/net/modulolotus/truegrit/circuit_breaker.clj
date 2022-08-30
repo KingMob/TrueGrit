@@ -175,12 +175,25 @@
     allowed))
 
 (defn metrics
-  "Returns metrics for the given circuit breaker.
+  "Returns a map of metrics for the given circuit breaker.
 
-   Failure rate is a percentage, unless insufficient calls have been made (i.e.,
-   below `:minimum-number-of-calls`), in which case it's -1.
+   Failure rate and slow call rate are percentages, unless insufficient calls have been
+   made (i.e., below `:minimum-number-of-calls`), in which case it's -1.
 
-   Slow calls refer to calls that take a long time, but do not actually fail."
+   Slow calls refer to calls that take a long time, but do not actually fail.
+
+   Metric key list:
+   - :failure-rate
+   - :number-of-buffered-calls - total number of calls in the metrics, \"buffered\" doesn't mean anything
+   - :number-of-failed-calls
+   - :number-of-not-permitted-calls - number of calls blocked by OPEN status - always 0 in CLOSED or HALF_OPEN status
+   - :number-of-slow-calls
+   - :number-of-slow-failed-calls
+   - :number-of-slow-successful-calls
+   - :number-of-successful-calls
+   - :slow-call-rate
+
+   Also see io.github.resilience4j.circuitbreaker.CircuitBreaker.Metrics"
   [^CircuitBreaker cb]
   (let [cb-metrics (.getMetrics cb)]
     {:failure-rate                    (.getFailureRate cb-metrics)

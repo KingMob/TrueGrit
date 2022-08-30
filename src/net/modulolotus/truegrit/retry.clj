@@ -23,7 +23,7 @@
     - `:retry-exceptions` - a coll of Throwables to retry on - defaults to all - `:ignore-exceptions` takes precedence over this
     - `:retry-on-exception` - a 1-arg fn that tests a Throwable and returns true if it should be retried
     - `:retry-on-result` - a 1-arg fn that tests the result and returns true if it should be retried
-    - `:fail-after-max-attempts?` - Should it throw a MaxRetriesExceededException if it reached the maximum number of attempts? - defaults to false
+    - `:fail-after-max-attempts?` - If :retry-on-result is set, should it throw a MaxRetriesExceededException if it reached the maximum number of attempts, but the retry-on-result predicate is still true? - defaults to false
     - `:interval-bi-function` - a 2-arity fn that takes in the number of attempts so far (from 1 to n) and either a Throwable or a result - returns
            the number of ms to wait - should only be used when `:retry-on-result` is also set
 
