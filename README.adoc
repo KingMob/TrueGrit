@@ -18,7 +18,7 @@ return a wrapped fn with the resilience policy attached. All fns return
 the same results (except for thread-pool-based bulkheads, which make fns
 that return Futures).
 
-Docs are available https://cljdoc.org/badge/net.modulolotus/truegrit[here].
+Docs are available https://cljdoc.org/d/net.modulolotus/truegrit[here].
 
 === Background reading
 
@@ -28,8 +28,8 @@ See:
 
 * Resilience4j docs - https://resilience4j.readme.io/
 * Circuit breaker pattern - https://www.martinfowler.com/bliki/CircuitBreaker.html
-* Release It! - https://pragprog.com/titles/mnee2/release-it-second-edition/
-* Hystrix wiki - https://github.com/Netflix/Hystrix/wiki
+* _Release It!_ - https://pragprog.com/titles/mnee2/release-it-second-edition/
+* Hystrix circuit breaker wiki - https://github.com/Netflix/Hystrix/wiki
 
 === Examples
 
@@ -131,25 +131,37 @@ See:
     (recur)))
 ----
 
-=== Guidelines
+=== Guidelines and Notes
 
-[horizontal]
-Circuit breaker status shorthand:: CLOSED is good, OPEN is bad. Think of electricity flowing.
+[cols="s,a"]
+|===
 
-Make sure you've read up on bulkheads and circuit breakers before using them.:: Seriously.
+|Circuit breaker status shorthand
+|CLOSED is good, OPEN is bad. Think of electricity flowing.
 
-Retries only make sense if there's a reasonable expectation the fn will succeed within an acceptable time frame.:: They're better-suited for temporary glitches in the matrix, not a service being down all day. If the fn won't succeed in time, retries will make things _worse_, which is why pairing them with circuit breakers works well.
+|Read up on bulkheads and circuit breakers before using them
+|Seriously.
 
-Be mindful of interactions at different levels of the system.:: E.g.,
-wrapping a high-level fn with a retry policy of 3 attempts that calls an
-AWS client lower down that _also_ has its own retry policy of 3 attempts
+|Circuit breakers should _never_ be created on-demand
+|Circuit breakers work by collecting data about a function's success/failure rate over time. If you create a CB on the fly (like for an anonymous fn), but you only call that particular fn one time, the CB is useless. If you need to construct fns on the fly, but still track their overall success, you should create a CB ahead of time, and share it with all the anonymous fns by using `cb/wrap`.
+
+|Retries only make sense if there's a reasonable expectation the fn will succeed within an acceptable time frame
+|They're better-suited for temporary glitches in the matrix, not a service being down all day. If the fn doesn't succeed in time, retries can make things _worse_, by adding to the downstream load, which is why pairing them with circuit breakers works well.
+
+|Be mindful of interactions at different levels of the system
+|E.g., wrapping a high-level fn with a retry policy of 3 attempts that calls an
+AWS client lower down that _also_ has its own internal retry policy of 3 attempts
 can result in up to 3x3=9 calls under failure modes, exacerbating
-things. Another common example is having multiple timeouts; it's pointless,
+things.
+
+Another common example is having multiple timeouts; it's confusing and pointless,
 since the shortest timeout will trigger first.
 
-You still need to handle errors.:: No amount of resilience policies can ensure a function will always succeed.
+|You still need to handle errors
+|No amount of resilience policies can ensure a function will always succeed.
 
-_Order of wrapping matters._ E.g.:
+|_Order of wrapping matters_
+|E.g.:
 
 [source,clojure]
 ----
@@ -159,8 +171,8 @@ _Order of wrapping matters._ E.g.:
 ----
 
 will retry several times, but if the time limit is up before the tries
-succeed, it will return failure. This is probably not what you want. On
-the other hand:
+succeed, it will fail. This is probably not what you want. On the other
+hand:
 
 [source,clojure]
 ----
@@ -173,6 +185,7 @@ the other hand:
 will make calls with a certain time limit, and only if they return
 failure or exceed their time limit, will it attempt a retry. If you want
 a canonical "good" ordering, see the `robustify` example fn in the source.
+|===
 
 === TrueGrit architecture
 
