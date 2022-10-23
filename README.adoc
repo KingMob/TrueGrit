@@ -11,21 +11,30 @@ image::./true-grit-bridges.jpg[True Grit,float="right"]
 === About
 
 A data-driven, functionally-oriented, idiomatic wrapper library for
-using Resilience4j. Start in the `net.modulolotus.truegrit` namespace,
-and see the individual policy namespaces if you have more advanced needs.
-It contains all-in-one functions that take a fn and a config map, and
-return a wrapped fn with the resilience policy attached. All fns return
-the same results (except for thread-pool-based bulkheads, which make fns
-that return Futures).
+using Resilience4j. 
+
+Start in the `net.modulolotus.truegrit` namespace, and see the individual 
+policy namespaces if you have more advanced needs. It contains all-in-one 
+functions that take a function and a config map, and return a wrapped 
+function with the resilience policy attached. All wrapped functions return
+the same results as the original (except for thread-pool-based bulkheads, 
+which return Futures).
 
 Docs are available https://cljdoc.org/d/net.modulolotus/truegrit[here].
 
-=== Background reading
+True Grit is stable and largely done. The lack of recent commits does _not_ 
+mean it is abandoned. I am still actively maintaining it, but the only planned 
+future work is for bug fixes and adapting to Resilience4j updates.
 
-Before using circuit breakers and bulkheads, be sure to understand how they operate. I highly recommend _Release It!_ to understand the ways distributed systems can fail and how to compensate for them.
+=== Documentation
+
+Before using circuit breakers and bulkheads, be sure to understand how they 
+operate. I highly recommend _Release It!_ to understand the ways distributed 
+systems can fail and how to compensate for them.
 
 See:
 
+* True Grit docs - https://cljdoc.org/d/net.modulolotus/truegrit
 * Resilience4j docs - https://resilience4j.readme.io/
 * Circuit breaker pattern - https://www.martinfowler.com/bliki/CircuitBreaker.html
 * _Release It!_ - https://pragprog.com/titles/mnee2/release-it-second-edition/
@@ -277,3 +286,7 @@ containers, but the code I wrote for them still exists, so I could add
 them back if people really need them.
 
 Metric module support may be added, if anyone expresses a need for it.
+
+'''
+
+© 2022 Matthew Davidson
