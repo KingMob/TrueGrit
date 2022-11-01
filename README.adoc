@@ -10,10 +10,19 @@ image::./true-grit-bridges.jpg[True Grit,float="right"]
 
 === About
 
-A data-driven, functionally-oriented, idiomatic wrapper library for
-using Resilience4j. 
+True Grit enables flexible responses to function failure. True Grit is a 
+data-driven, functionally-oriented, idiomatic wrapper library for using 
+Resilience4j. 
 
-Start in the `net.modulolotus.truegrit` namespace, and see the individual 
+It allows you attach timeouts, rate limiters, retry policies, circuit breakers 
+to track function failure rates, and bulkheads to reserve capacity and partition 
+usage. The most common use is to wrap functions that call out to an underlying 
+network service. With True Grit, you can do things like say "Give this network 
+call 5s before it's considered to time out, retry it up to 3 times in case of 
+intermittent network failure, track how many calls fail overall, and if more than 
+50% do, temporarily halt the function so we don't hammer the downstream service."
+
+Start with the `net.modulolotus.truegrit` namespace, and see the individual 
 policy namespaces if you have more advanced needs. It contains all-in-one 
 functions that take a function and a config map, and return a wrapped 
 function with the resilience policy attached. All wrapped functions return
@@ -24,7 +33,8 @@ Docs are available https://cljdoc.org/d/net.modulolotus/truegrit[here].
 
 True Grit is stable and largely done. The lack of recent commits does _not_ 
 mean it is abandoned. I am still actively maintaining it, but the only planned 
-future work is for bug fixes and adapting to Resilience4j updates.
+future work is for bug fixes and incorporating Resilience4j updates. Suggestions
+for feature requests welcome, but no promises.
 
 === Documentation
 
@@ -221,7 +231,8 @@ the hood. The first time you request an object with a certain name and
 config, it will create a new one. The second time you request it with
 the same name, it will return the existing one. This means you can
 efficiently use r4j on the fly without creating a lot of extra objects,
-but it also means that a) if you make a typo in the policy name when creating/retrieving, you will get a _new_ object, and b) you cannot
+but it also means that a) if you make a typo in the policy name when 
+creating/retrieving, you will get a _new_ object, and b) you cannot
 update a config to an existing policy in a registry. (R4j policy objects
 are immutable, but the r4j registry interface doesn’t make it clear that
 a new config will be effectively ignored.)
@@ -256,7 +267,8 @@ options, and then you don’t have polymorphism. Even in a case where
 meaningful-but-limited polymorphism could be obtained, they’re still
 hampered by the non-substitutability of the underlying strategies they
 use. This is all reflected in the interfaces/classes of Resilience4j
-itself, which has the exact same issue; there’s fewer common interfaces/superclasses than you’d expect.
+itself, which has the exact same issue; there’s fewer common 
+interfaces/superclasses than you’d expect.
 
 _But surely protocols wouldn’t hurt, right?_ Well, they would suggest
 misleading polymorphism. They would add a bit of extra clutter to the
@@ -274,7 +286,8 @@ and error-prone than a bit of copying.
 
 The r4j cache module is currently unsupported, since many Clojure/Java
 caching libraries already exist. However, it could be included, if people
-are interested.
+are interested. Let me know if you want it, or better still, submit a 
+patch.
 
 Supporting all the Java frameworks that r4j interoperates with is also a
 non-goal for now.
