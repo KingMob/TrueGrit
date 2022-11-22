@@ -2,7 +2,7 @@
   "Utility methods for True Grit."
   {:no-doc true}
   (:import (io.github.resilience4j.core EventConsumer IntervalBiFunction IntervalFunction)
-           (io.vavr.control Either)
+           (io.github.resilience4j.core.functions Either)
            (java.time Duration)
            (java.util.function Predicate Supplier)))
 

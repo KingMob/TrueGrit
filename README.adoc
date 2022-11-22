@@ -31,10 +31,14 @@ which return Futures).
 
 Docs are available https://cljdoc.org/d/net.modulolotus/truegrit[here].
 
-True Grit is stable and largely done. The lack of recent commits does _not_ 
+True Grit is stable and largely done. The lack of recent commits does _not_
 mean it is abandoned. I am still actively maintaining it, but the only planned 
-future work is for bug fixes and incorporating Resilience4j updates. Suggestions
+future work is for bug fixes and Resilience4j updates. Suggestions
 for feature requests welcome, but no promises.
+
+==== Dependencies
+
+As of Resilience4j 2.x and thus, True Grit 2.x, the minimum Java version is 17. If you need support for earlier Java versions, stick with the 1.x versions of True Grit.
 
 === Documentation
 

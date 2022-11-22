@@ -1,19 +1,19 @@
 {:paths ["src" "resources"]
- :deps  {io.github.resilience4j/resilience4j-circuitbreaker {:mvn/version "1.7.1"}
-         io.github.resilience4j/resilience4j-ratelimiter    {:mvn/version "1.7.1"}
-         io.github.resilience4j/resilience4j-bulkhead       {:mvn/version "1.7.1"}
-         io.github.resilience4j/resilience4j-retry          {:mvn/version "1.7.1"}
-         io.github.resilience4j/resilience4j-timelimiter    {:mvn/version "1.7.1"}
+ :deps  {io.github.resilience4j/resilience4j-circuitbreaker {:mvn/version "2.0.0"}
+         io.github.resilience4j/resilience4j-ratelimiter    {:mvn/version "2.0.0"}
+         io.github.resilience4j/resilience4j-bulkhead       {:mvn/version "2.0.0"}
+         io.github.resilience4j/resilience4j-retry          {:mvn/version "2.0.0"}
+         io.github.resilience4j/resilience4j-timelimiter    {:mvn/version "2.0.0"}
          org.clojure/tools.logging                          {:mvn/version "1.2.4"}}
  :aliases
  {:build {:deps       {io.github.seancorfield/build-clj {:git/tag "v0.8.3" :git/sha "7ac1f8d"}
-                       cljdoc/cljdoc {:mvn/version "0.0.1315-c9e9a7e"}}
+                       cljdoc/cljdoc                    {:mvn/version "0.0.1315-c9e9a7e"}}
           :ns-default build}
   :env/dev
   {:extra-paths ["dev"]
    :extra-deps  {org.clojure/clojure    {:mvn/version "1.11.1"}
-                 org.slf4j/slf4j-simple {:mvn/version "1.7.36"}}
+                 org.slf4j/slf4j-simple {:mvn/version "2.0.3"}}
    :jvm-opts    ["-Dorg.slf4j.simpleLogger.defaultLogLevel=trace" "-Dorg.slf4j.simpleLogger.logFile=System.out"]}
   :test  {:extra-paths ["test"]
-          :extra-deps  {lambdaisland/kaocha {:mvn/version "1.65.1029"}}
+          :extra-deps  {lambdaisland/kaocha {:mvn/version "1.71.1119"}}
           :main-opts   ["-m" "kaocha.runner"]}}}

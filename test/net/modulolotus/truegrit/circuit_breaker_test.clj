@@ -27,9 +27,7 @@
     (is (= (:minimum-number-of-calls default-test-config)
            (.getMinimumNumberOfCalls cb-config)))
     (is (= (:permitted-number-of-calls-in-half-open-state default-test-config)
-           (.getPermittedNumberOfCallsInHalfOpenState cb-config)))
-    (is (= (Duration/ofMillis (:wait-duration-in-open-state default-test-config))
-           (.getWaitDurationInOpenState cb-config)))))
+           (.getPermittedNumberOfCallsInHalfOpenState cb-config)))))
 
 (deftest basic-operation
   (let [resil-returns (with-circuit-breaker returns-input default-test-config)]
