@@ -7,13 +7,14 @@
   (:import (java.io File)))
 
 (def lib 'net.modulolotus/truegrit)
-#_(def version "0.1.0-SNAPSHOT")
-;; alternatively, use MAJOR.MINOR.COMMITS:
-(def version (format "1.0.%s" (b/git-count-revs nil)))
+
+;; Version is MAJOR.MINOR.COMMITS:
+(def version (format "2.0.%s" (b/git-count-revs nil)))
 (def extra-build-opts {:lib     lib
                        :version version
                        :tag     version
                        :src-pom "template/pom.xml"})
+(def deployment-branch "main")
 
 (def cljdoc-port 8000)
 
@@ -42,10 +43,28 @@
       (merge extra-build-opts)
       (bb/install)))
 
-(defn deploy "Deploy the JAR to Clojars." [opts]
-  (-> opts
-      (merge extra-build-opts)
-      (bb/deploy)))
+(defn tag "Tag commit with current version" [_]
+  (b/git-process {:git-args (str "tag " version)}))
+
+(defn- current-branch []
+  (b/git-process {:git-args "branch --show-current"}))
+
+(defn push-branch "Push current branch to origin." [_]
+  (b/git-process {:git-args ["push" "origin" (current-branch)]}))
+
+(defn deploy
+  "Tag with the current version, push to GH (for cljdoc), and
+   deploy the jar to Clojars."
+  [opts]
+  (if (= (current-branch) deployment-branch)
+    (do
+      (tag opts)
+      (push-branch opts)
+      (-> opts
+          (merge extra-build-opts)
+          (bb/deploy)))
+    (throw (ex-info (str "Current branch is not " deployment-branch ". Cannot deploy.")
+                    {:current-branch (current-branch)}))))
 
 
 (defn- home-dir []
@@ -62,7 +81,9 @@
     (when-not (zero? exit)
       (println "ERROR: Could not start Docker with command:\n" (str/join " " docker-command-args)))))
 
-(defn- cljdoc-docker [opts]
+(defn- cljdoc-docker
+  "Do not call directly."
+  [opts]
   (-> opts
       (merge extra-build-opts)
       (bb/jar)
@@ -75,7 +96,7 @@
                              "--volume" (str (home-dir) "/.m2:/root/.m2")
                              "--volume" "/tmp/cljdoc:/app/data"
                              "--entrypoint" "clojure"
-                             "cljdoc/cljdoc" "-A:cli" "ingest"
+                             "cljdoc/cljdoc" "-Sforce" "-A:cli" "ingest"
                              "--project" (str lib)
                              "--version" (str version)
                              "--git" (:git opts "/repo-to-import")
@@ -89,9 +110,10 @@
 (defn cljdoc-docker-github
   "Push to GH, then build cljdoc"
   [opts]
-  (b/git-process {:git-args ["push" "origin" "main"]})
+  (push-branch opts)
   (cljdoc-docker (merge {:git "https://github.com/KingMob/TrueGrit"} opts)))
 
-;; 2b. ..or run this
+;; 2b. ..or run this if you don't care about GH links
 (defn cljdoc-docker-local [opts]
   (cljdoc-docker (merge {:git "/repo-to-import"} opts)))
+
