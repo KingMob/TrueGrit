@@ -3,6 +3,15 @@
 
 Versions are _MAJOR.MINOR.NUMBER-OF-COMMITS_.
 
+=== 2.0.19
+
+* Upgrade to Resilience4j 2.0.0
+* Improved docs
+* Moved architecture section to its own document
+* Fix broken cljdoc link
+* Add liveness declaration and copyright
+* Improved internal build process
+
 === 1.0.12 - 2022-08-30
 
 * Updated docs, added examples
