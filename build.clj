@@ -18,6 +18,9 @@
 
 (def cljdoc-port 8000)
 
+(defn rev-count [_]
+  (println "Current revision count:" (b/git-count-revs nil)))
+
 (defn clean [opts]
   (-> opts
       (bb/clean)))
@@ -89,7 +92,7 @@
       (bb/jar)
       (bb/install))
   (let [git-rev (b/git-process {:git-args "rev-parse HEAD"})
-        cwd (-> b/*project-root* (File.) (.getCanonicalPath))
+        cwd (-> ^String b/*project-root* (File.) (.getCanonicalPath))
         docker-command-args [#_"echo"
                              "docker" "run" "--rm"
                              "--volume" (str cwd ":/repo-to-import")
