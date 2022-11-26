@@ -55,6 +55,9 @@
 (defn push-branch "Push current branch to origin." [_]
   (b/git-process {:git-args ["push" "origin" (current-branch)]}))
 
+(defn push-tags "Push all tags to origin" [_]
+  (b/git-process {:git-args ["push" "--tags"]}))
+
 (defn deploy
   "Tag with the current version, push to GH (for cljdoc), and
    deploy the jar to Clojars."
@@ -63,6 +66,7 @@
     (do
       (tag opts)
       (push-branch opts)
+      (push-tags opts)
       (-> opts
           (merge extra-build-opts)
           (bb/deploy)))
