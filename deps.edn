@@ -1,9 +1,9 @@
 {:paths ["src" "resources"]
- :deps  {io.github.resilience4j/resilience4j-circuitbreaker {:mvn/version "2.0.0"}
-         io.github.resilience4j/resilience4j-ratelimiter    {:mvn/version "2.0.0"}
-         io.github.resilience4j/resilience4j-bulkhead       {:mvn/version "2.0.0"}
-         io.github.resilience4j/resilience4j-retry          {:mvn/version "2.0.0"}
-         io.github.resilience4j/resilience4j-timelimiter    {:mvn/version "2.0.0"}
+ :deps  {io.github.resilience4j/resilience4j-circuitbreaker {:mvn/version "2.0.2"}
+         io.github.resilience4j/resilience4j-ratelimiter    {:mvn/version "2.0.2"}
+         io.github.resilience4j/resilience4j-bulkhead       {:mvn/version "2.0.2"}
+         io.github.resilience4j/resilience4j-retry          {:mvn/version "2.0.2"}
+         io.github.resilience4j/resilience4j-timelimiter    {:mvn/version "2.0.2"}
          org.clojure/tools.logging                          {:mvn/version "1.2.4"}}
  :aliases
  {:build {:deps       {io.github.seancorfield/build-clj {:git/tag "v0.8.3" :git/sha "7ac1f8d"}
