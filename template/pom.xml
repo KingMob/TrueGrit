@@ -5,13 +5,12 @@
   <artifactId>truegrit</artifactId>
   <version>0.1.0-SNAPSHOT</version>
   <name>TrueGrit</name>
-  <description>A data-driven, functionally-oriented, idiomatic wrapper library for
-    using Resilience4j in Clojure.</description>
+  <description>A data-driven, functionally-oriented, idiomatic Clojure library for circuit breakers, bulkheads, retries, rate limiters, and timeouts.</description>
   <url>https://github.com/KingMob/TrueGrit</url>
   <licenses>
     <license>
-      <name>Eclipse Public License 2.0</name>
-      <url>https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html</url>
+      <name>MIT License</name>
+      <url>http://opensource.org/licenses/MIT</url>
       <distribution>repo</distribution>
     </license>
   </licenses>
