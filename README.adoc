@@ -36,9 +36,17 @@ mean it is abandoned. I am still actively maintaining it, but the only planned
 future work is for bug fixes and Resilience4j updates. Suggestions
 for feature requests welcome, but no promises.
 
-==== Dependencies
+=== Why should you use it?
 
-As of Resilience4j 2.x and thus, True Grit 2.x, the minimum Java version is 17. If you need support for earlier Java versions, stick with the 1.x versions of True Grit.
+Wrapper libraries are frequently more hassle than doing interop directly. But in 
+Resilience4j's case, while it's an _excellent_ library, it requires coordinating 
+dozens of Java classes to get anything done. So, if you don't feel like wrangling 
+a bunch of Config/Builder/Registry/etc classes, True Grit is for you. 
+
+=== Dependencies
+
+As of Resilience4j 2.x and thus, True Grit 2.x, the minimum Java version is 17. If 
+you need support for earlier Java versions, stick with the 1.x versions of True Grit.
 
 === Documentation
 
