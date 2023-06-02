@@ -15,7 +15,7 @@ data-driven, functionally-oriented, idiomatic wrapper library for using
 Resilience4j. 
 
 It allows you attach timeouts, rate limiters, retry policies, circuit breakers 
-to track function failure rates, and bulkheads to reserve capacity and partition 
+to track function failure rates, and bulkheads to reserve capacity and partition
 usage. The most common use is to wrap functions that call out to an underlying 
 network service. With True Grit, you can do things like say "Give this network 
 call 5s before it's considered to time out, retry it up to 3 times in case of 
@@ -38,15 +38,16 @@ for feature requests welcome, but no promises.
 
 === Why should you use it?
 
-Wrapper libraries are frequently more hassle than doing interop directly. But in 
+Wrapper libraries are frequently more hassle than doing interop directly. But in
 Resilience4j's case, while it's an _excellent_ library, it requires coordinating 
 dozens of Java classes to get anything done. So, if you don't feel like wrangling 
 a bunch of Config/Builder/Registry/etc classes, True Grit is for you. 
 
 === Dependencies
 
-As of Resilience4j 2.x and thus, True Grit 2.x, the minimum Java version is 17. If 
-you need support for earlier Java versions, stick with the 1.x versions of True Grit.
+As of Resilience4j 2.x and thus, True Grit 2.x, the minimum Java version is 17.
+If you need support for earlier Java versions, stick with the 1.x versions of
+True Grit. (It has the exact same API and functionality.)
 
 === Documentation
 
