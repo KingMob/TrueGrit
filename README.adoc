@@ -11,12 +11,18 @@ image::./true-grit-bridges.jpg[True Grit,float="right"]
 === About
 
 True Grit enables flexible responses to function failure. True Grit is a 
-data-driven, functionally-oriented, idiomatic wrapper library for using 
-Resilience4j. 
+data-driven, functionally-oriented, idiomatic wrapper library for using
+Resilience4j, one of the top resilience Java libraries.
 
-It allows you attach timeouts, rate limiters, retry policies, circuit breakers 
-to track function failure rates, and bulkheads to reserve capacity and partition
-usage. The most common use is to wrap functions that call out to an underlying 
+It offers:
+
+* *timeouts* - throw an exception if a function takes too long
+* *rate limiters* - limit the number of calls to a function per time period
+* *retries* - retry a function if it fails
+* *circuit breakers* - track function failure rates, and block calls to the fn if it fails too often
+* *bulkheads* - to reserve capacity and partition usage
+
+The most common way to use True Grit is to wrap functions that call out to an underlying
 network service. With True Grit, you can do things like say "Give this network 
 call 5s before it's considered to time out, retry it up to 3 times in case of 
 intermittent network failure, track how many calls fail overall, and if more than 
@@ -35,6 +41,21 @@ True Grit is stable and largely done. The lack of recent commits does _not_
 mean it is abandoned. I am still actively maintaining it, but the only planned 
 future work is for bug fixes and Resilience4j updates. Suggestions
 for feature requests welcome, but no promises.
+
+=== Installation
+
+Add the following to your Leiningen `project.clj`:
+
+----
+[net.modulolotus/truegrit "2.1.30"]
+----
+
+Add the following to your `deps.edn`:
+
+----
+net.modulolotus/truegrit {:mvn/version "2.1.30"}
+----
+
 
 === Why should you use it?
 
@@ -60,7 +81,7 @@ See:
 * True Grit docs - https://cljdoc.org/d/net.modulolotus/truegrit
 * Resilience4j docs - https://resilience4j.readme.io/
 * Circuit breaker pattern - https://www.martinfowler.com/bliki/CircuitBreaker.html
-* _Release It!_ - https://pragprog.com/titles/mnee2/release-it-second-edition/
+* _Release It!_ book - https://pragprog.com/titles/mnee2/release-it-second-edition/
 * Hystrix circuit breaker wiki - https://github.com/Netflix/Hystrix/wiki
 
 === Examples

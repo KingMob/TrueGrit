@@ -3,6 +3,10 @@
 
 Versions are _MAJOR.MINOR.NUMBER-OF-COMMITS_.
 
+=== 2.1.30 - 2023-07-09
+
+* Upgrade to Resilience4j 2.1.0
+
 === 2.0.23 - 2022-12-16
 
 * Upgrade to Resilience4j 2.0.2

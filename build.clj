@@ -9,7 +9,7 @@
 (def lib 'net.modulolotus/truegrit)
 
 ;; Version is MAJOR.MINOR.COMMITS:
-(def version (format "2.0.%s" (b/git-count-revs nil)))
+(def version (format "2.1.%s" (b/git-count-revs nil)))
 (def extra-build-opts {:lib     lib
                        :version version
                        :tag     version
