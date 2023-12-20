@@ -1,3 +1,5 @@
+;; Run with clj-T:build X
+
 (ns build
   (:refer-clojure :exclude [test])
   (:require [clojure.java.browse :as browse]
@@ -9,7 +11,7 @@
 (def lib 'net.modulolotus/truegrit)
 
 ;; Version is MAJOR.MINOR.COMMITS:
-(def version (format "2.1.%s" (b/git-count-revs nil)))
+(def version (format "2.2.%s" (b/git-count-revs nil)))
 (def extra-build-opts {:lib     lib
                        :version version
                        :tag     version
