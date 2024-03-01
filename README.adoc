@@ -220,7 +220,7 @@ since the shortest timeout will trigger first.
 ----
 (-> my-fn
     (with-retry some-retry-config)
-    (with-time-limiter some-timeout-config)
+    (with-time-limiter some-timeout-config))
 ----
 
 will retry several times, but if the time limit is up before the tries
@@ -231,7 +231,7 @@ hand:
 ----
 (-> my-fn
     (with-time-limiter some-timeout-config)
-    (with-retry some-retry-config)
+    (with-retry some-retry-config))
 ----
 
 
@@ -260,4 +260,4 @@ Metric module support may be added, if anyone expresses a need for it.
 
 '''
 
-© 2023 Matthew Davidson
+© 2024 Matthew Davidson
