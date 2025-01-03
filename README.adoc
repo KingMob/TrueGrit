@@ -47,13 +47,13 @@ for feature requests welcome, but no promises.
 Add the following to your Leiningen `project.clj`:
 
 ----
-[net.modulolotus/truegrit "2.2.32"]
+[net.modulolotus/truegrit "2.3.35"]
 ----
 
 Add the following to your `deps.edn`:
 
 ----
-net.modulolotus/truegrit {:mvn/version "2.2.32"}
+net.modulolotus/truegrit {:mvn/version "2.3.35"}
 ----
 
 

@@ -27,3 +27,5 @@
 /checkouts
 /classes
 /target
+*.iml
+.idea/

@@ -11,7 +11,7 @@
 (def lib 'net.modulolotus/truegrit)
 
 ;; Version is MAJOR.MINOR.COMMITS:
-(def version (format "2.2.%s" (b/git-count-revs nil)))
+(def version (format "2.3.%s" (b/git-count-revs nil)))
 (def extra-build-opts {:lib     lib
                        :version version
                        :tag     version
@@ -50,6 +50,9 @@
 
 (defn tag "Tag commit with current version" [_]
   (b/git-process {:git-args (str "tag " version)}))
+
+(defn current-version [_]
+  (println version))
 
 (defn- current-branch []
   (b/git-process {:git-args "branch --show-current"}))
