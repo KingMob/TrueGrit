@@ -240,24 +240,22 @@ failure or exceed their time limit, will it attempt a retry. If you want
 a canonical "good" ordering, see the `robustify` example fn in the source.
 |===
 
-==== Non-goals
+=== Improvement Status
+
+I will not personally be adding support for any new features. 
+
+However, if there's something you wish to add or improve, feel free to reach
+out. I'm open to contributions, but please talk to me before writing code.
+
+==== Design Non-goals
 
 The r4j cache module is currently unsupported, since many Clojure/Java
-caching libraries already exist. However, it could be included, if people
-are interested. Let me know if you want it, or better still, submit a 
-patch.
+caching libraries already exist. However, it could be included, if you
+are interested.
 
 Supporting all the Java frameworks that r4j interoperates with is also a
-non-goal for now.
-
-==== Future directions
-
-The r4j registries add virtually nothing over standard Clojure mutable
-containers, but the code I wrote for them still exists, so I could add
-them back if people really need them.
-
-Metric module support may be added, if anyone expresses a need for it.
+non-goal.
 
 '''
 
-© 2025 Matthew Davidson
+© 2026 Matthew Davidson
